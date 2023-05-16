@@ -33,7 +33,7 @@ function toISOLocal(d) {
 let images;
 
 // includes all sorts of edge cases and weird stuff
-processExport("travelsthroughalens.xml");
+processExport("../travelsthroughalens.xml");
 // full dump
 // processExport("ageekwithahat.wordpress.2020-08-22 (1).xml");
 

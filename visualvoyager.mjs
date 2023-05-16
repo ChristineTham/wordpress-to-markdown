@@ -28,7 +28,7 @@ function toISOLocal(d) {
 
 let images;
 
-processExport("visualvoyager.xml");
+processExport("../visualvoyager.xml");
 
 function processExport(file) {
     const parser = new xml2js.Parser();
@@ -44,6 +44,8 @@ function processExport(file) {
             }
             console.log("Parsed XML");
 
+            const categories = result.rss.channel[0]['wp:category']
+
             const posts = result.rss.channel[0].item;
             images = posts.filter((p) => p["wp:post_type"][0] === "attachment");
 
@@ -51,9 +53,48 @@ function processExport(file) {
                 posts
                     .filter((p) => p["wp:post_type"][0] === "post")
                     .forEach(processPost);
+                categories.forEach(processCategory);
             });
         });
     });
+}
+
+async function processCategory(cat) {
+    console.log("Processing Category");
+
+    const title = cat['wp:cat_name']
+    const slug = cat['wp:category_nicename']
+    const parent = cat['wp:category_parent']
+    const description = cat['wp:category_description']
+    console.log(`Category: ${title} (${slug})`)
+    let directory = 'category';
+    let fname = `${slug}.md`;
+
+    fs.mkdirSync(`visualvoyager/${directory}`, { recursive: true })
+
+
+    let frontmatter = [
+        "---",
+        `title: '${String(title).replace(/'/g, "''")}'`
+    ];
+
+
+    if (parent) {
+        frontmatter.push(`parent: ${parent}`);
+    }
+
+    if (description) {
+        frontmatter.push(`description: ${description}`);
+    }
+
+    frontmatter.push("---");
+    frontmatter.push("");
+
+    fs.writeFile(
+        `visualvoyager/${directory}/${fname}`,
+        frontmatter.join("\n"),
+        function (err) { }
+    );
 }
 
 async function processPost(post) {
