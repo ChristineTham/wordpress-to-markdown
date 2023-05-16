@@ -219,6 +219,7 @@ function fixCodeBlocks() {
 // changes iframe and blockquote embeds to regular links
 function fixEmbeds() {
     function isEmbeddable(iframe) {
+        if (!iframe.properties.src) { return null }
         return iframe.properties.src.match(
             /^http(s)?:\/\/(www\.)?(youtube|youtu.be|codesandbox|codepen)/
         );
